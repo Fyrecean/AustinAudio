@@ -1,37 +1,59 @@
-import javax.sound.sampled.Clip;
 import java.io.File;
 
 public class FileManager {
     private static FileManager fileManager = new FileManager();
-    private File audioFile;
-    private Player player;
+    private Player[] players = new Player[2];
     private Loop loop;
     private boolean isPlaying;
 
     private FileManager() {
-        player = new Player();
     }
 
     public static FileManager getFileManager() {
         return fileManager;
     }
 
-    public File load(String path) {
-        if (!isPlaying) {
-            audioFile = new File(path);
-            return audioFile;
-        } else {
-            return null;
+    public void loadFile(File file) {
+        if (isPlaying) {
+            players[0].kill();
+            players[1].kill();
         }
+        players[0] = new Player();
+        players[1] = new Player();
+        players[0].makeClip(file, 0, 6, 2);
+        players[1].makeClip(file, 0, 6, 2);
     }
 
     public void play() {
-        player.play(audioFile);
-        isPlaying = true;
+        if (players[0] != null) {
+            players[0].play();
+            isPlaying = true;
+        }
     }
 
-    public void pause() throws InterruptedException {
-        player.pause();
-        isPlaying = false;
+    public void pause() {
+        if (isPlaying) {
+            players[0].pause();
+            players[1].pause();
+            isPlaying = false;
+        }
+    }
+
+    public void stop() {
+        for (Player player : players) {
+            if (player != null)
+                player.kill();
+        }
+    }
+
+    public void triggerLoop() {
+        players[1].play();
+        Player hold = players[0];
+        players[0] = players[1];
+        players[1] = hold;
+    }
+
+    public boolean isReady() {
+        return players[0] != null;
     }
 }
