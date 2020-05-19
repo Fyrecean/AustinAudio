@@ -58,10 +58,10 @@ public class AudioPlayer extends Thread {
         while (!started) {
             Thread.yield();
         }
-        setVolume(0);
+        setGain(0);
         play();
         fadeIn(fadeLength);
-        setVolume(1);
+        setGain(1);
         long endTime;
         if (end > 0) {
             endTime = (end - fadeLength) * timeConversion;
@@ -71,13 +71,13 @@ public class AudioPlayer extends Thread {
         while (line.isOpen() && !isInterrupted()) {
             if (startFadeout) {
                 fadeOut(fadeLength);
-                setVolume(0);
+                setGain(0);
                 break;
             }
             if (line.getMicrosecondPosition() >= endTime) {
                 caller.triggerLoop();
                 fadeOut(fadeLength);
-                setVolume(0);
+                setGain(0);
                 break;
             }
         }
@@ -91,7 +91,7 @@ public class AudioPlayer extends Thread {
         while (currentFade < duration && !fadingOut && !isInterrupted()) {
             currentFade += fadeIncrement;
             double volume = Utils.invlerp(0, fadeLength, currentFade);
-            setVolume(volume);
+            setGain(volume);
             try {
                 Thread.sleep(fadeIncrement);
             } catch (InterruptedException ex) {
@@ -108,7 +108,7 @@ public class AudioPlayer extends Thread {
             double currentFade = duration;
             while (currentFade > 0 && !isInterrupted()) {
                 currentFade -= fadeIncrement;
-                setVolume((1 - Utils.invlerp(fadeLength, 0, currentFade)) * startingGain);
+                setGain((1 - Utils.invlerp(fadeLength, 0, currentFade)) * startingGain);
                 try {
                     Thread.sleep(fadeIncrement);
                 } catch (InterruptedException ex) {
@@ -141,7 +141,11 @@ public class AudioPlayer extends Thread {
         }
     }
 
-    public void setVolume(double value) {
+    public void setPositionMillis(int position) {
+        line.setMicrosecondPosition(position * timeConversion);
+    }
+
+    private void setGain(double value) {
         FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
         value = (value <= 0.0) ? .0001 : Math.min(value, 1.0);
         float dB = (float)Utils.clamp(-80, 6, (Math.log(value)/Math.log(10)*20.0));

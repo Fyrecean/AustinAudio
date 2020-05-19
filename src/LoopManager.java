@@ -16,7 +16,7 @@ public class LoopManager  {
         return loopManager;
     }
 
-    public void addTrack(File file, int startTime, int endTime, int fadeDuration) {
+    public void addTrack(File file, int fadeDuration) {
         tracks.add(new Track(file, fadeDuration));
     }
 

@@ -9,6 +9,7 @@ public class Track extends CanLoop implements Serializable {
         this.fadeDuration = fadeDuration;
         this.file = file;
         players[0] = new AudioPlayer(this, file, fadeDuration);
+        players[0].start();
     }
 
     public void play() {

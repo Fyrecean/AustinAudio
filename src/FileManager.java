@@ -6,6 +6,7 @@ public class FileManager extends CanLoop {
     private static FileManager fileManager = new FileManager();;
     private int startTime, endTime, fadeDuration;
     private boolean isPlaying;
+    private boolean looping;
     private File file;
 
     private FileManager() {
@@ -18,16 +19,6 @@ public class FileManager extends CanLoop {
         return fileManager;
     }
 
-    public void setStartTime(int startTime) {
-        this.startTime = startTime;
-    }
-    public void setEndTime(int endTime) {
-        this.endTime = endTime;
-    }
-    public void setFadeDuration(int fadeDuration) {
-        this.fadeDuration = fadeDuration;
-    }
-
     public void loadFile(File file) {
         stop();
         this.file = file;
@@ -35,11 +26,21 @@ public class FileManager extends CanLoop {
         players[0].start();
     }
 
+    public boolean setPosition(int position) {
+        if(position > startTime + fadeDuration && position < endTime - fadeDuration) {
+            players[0].setPositionMillis(position);
+            return true;
+        }
+        return false;
+    }
+
     public boolean play() {
         if (players[0] != null) {
             players[0].play();
             isPlaying = true;
             return true;
+        } else if (file != null) {
+            players[0] = new AudioPlayer(this, file, startTime, endTime, fadeDuration);
         }
         return false;
     }
@@ -54,6 +55,15 @@ public class FileManager extends CanLoop {
             return true;
         }
         return false;
+    }
+
+    public void setBounds(int newStartTime, int newEndTime, int newFadeDuration) {
+        stop();
+        this.startTime = newStartTime;
+        this.endTime = newEndTime;
+        this.fadeDuration = newFadeDuration;
+        if (file != null)
+            players[0] = new AudioPlayer(this, file, startTime, endTime, fadeDuration);
     }
 
     public void stop() {
@@ -82,7 +92,7 @@ public class FileManager extends CanLoop {
             newStream = new AudioInputStream(inputStream, format, framesOfAudioToCopy);
             File destinationFile = new File("res/" + name + ".wav");
             AudioSystem.write(newStream, fileFormat.getType(), destinationFile);
-            LoopManager.getLoopManager().addTrack(destinationFile, startTime, endTime, fadeDuration);
+            LoopManager.getLoopManager().addTrack(destinationFile, fadeDuration);
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         } finally {
@@ -91,8 +101,14 @@ public class FileManager extends CanLoop {
         }
     }
 
+    public void setLooping(boolean looping) {
+        this.looping = looping;
+    }
+
     public void triggerLoop() {
-        players[1] = new AudioPlayer(this, file, startTime, endTime, fadeDuration);
-        super.triggerLoop();
+        if (looping) {
+            players[1] = new AudioPlayer(this, file, startTime, endTime, fadeDuration);
+            super.triggerLoop();
+        }
     }
 }
