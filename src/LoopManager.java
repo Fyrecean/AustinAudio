@@ -1,14 +1,14 @@
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LoopManager  {
     private static LoopManager loopManager = new LoopManager();
-    private List<Track> tracks = new ArrayList<>();
+    protected ObservableList<Track> tracks = FXCollections.observableArrayList();
     private int playingIndex = 0;
     private int selectedIndex = 0;
-    private boolean playing;
-    private Track undoHold = null;
+    private static Controller controller;
 
     private LoopManager() { }
 
@@ -16,16 +16,20 @@ public class LoopManager  {
         return loopManager;
     }
 
+    public static LoopManager getLoopManager(Controller controller) {
+        LoopManager.controller = controller;
+        return loopManager;
+    }
+
     public void addTrack(File file, int fadeDuration) {
         tracks.add(new Track(file, fadeDuration));
+        if (tracks.size() == 1) {
+            controller.populateListView();
+        }
     }
 
     public void removeTrack() {
-        undoHold = tracks.remove(selectedIndex);
-    }
-
-    public void restoreTrack() {
-        tracks.add(undoHold);
+        tracks.remove(selectedIndex);
     }
 
     public void play() {
@@ -33,8 +37,9 @@ public class LoopManager  {
     }
 
     public void pause() {
-        tracks.get(playingIndex).pause();
-        tracks.get(playingIndex + 1).pause();
+        for (Track t : tracks) {
+            t.pause();
+        }
     }
 
     public void nextTrack() {
@@ -60,12 +65,8 @@ public class LoopManager  {
         String[] trackNames = new String[tracks.size()];
         int i = 0;
         for(Track t : tracks) {
-            trackNames[i++] = t.getName();
+            trackNames[i++] = t.toString();
         }
         return trackNames;
-    }
-
-    public boolean isPlaying() {
-        return playing;
     }
 }

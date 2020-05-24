@@ -19,7 +19,7 @@ public class Track extends CanLoop implements Serializable {
     public void pause() {
         for (AudioPlayer player : players) {
             if (player != null)
-                player.pause();
+                player.interrupt();
         }
     }
 
@@ -30,7 +30,7 @@ public class Track extends CanLoop implements Serializable {
             players[1].interrupt();
     }
 
-    public String getName() {
+    public String toString() {
         return file.getName();
     }
 

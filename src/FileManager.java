@@ -1,3 +1,5 @@
+import javafx.application.Platform;
+
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +10,7 @@ public class FileManager extends CanLoop {
     private boolean isPlaying;
     private boolean looping;
     private File file;
+    private static Controller controller;
 
     private FileManager() {
         startTime = 0;
@@ -16,6 +19,10 @@ public class FileManager extends CanLoop {
     }
 
     public static FileManager getFileManager() {
+        return fileManager;
+    }
+    public static FileManager getFileManager(Controller controller) {
+        FileManager.controller = controller;
         return fileManager;
     }
 
@@ -41,6 +48,7 @@ public class FileManager extends CanLoop {
             return true;
         } else if (file != null) {
             players[0] = new AudioPlayer(this, file, startTime, endTime, fadeDuration);
+            players[0].start();
         }
         return false;
     }
@@ -58,12 +66,15 @@ public class FileManager extends CanLoop {
     }
 
     public void setBounds(int newStartTime, int newEndTime, int newFadeDuration) {
+        isPlaying = false;
         stop();
         this.startTime = newStartTime;
         this.endTime = newEndTime;
         this.fadeDuration = newFadeDuration;
-        if (file != null)
+        if (file != null) {
             players[0] = new AudioPlayer(this, file, startTime, endTime, fadeDuration);
+            players[0].start();
+        }
     }
 
     public void stop() {
@@ -73,7 +84,11 @@ public class FileManager extends CanLoop {
         }
     }
 
-    public void saveLoop(String name) {
+    public void saveLoop(String filePath) {
+        saveLoop(new File(filePath));
+    }
+
+    public void saveLoop(File destinationFile) {
         AudioInputStream inputStream = null;
         AudioInputStream newStream = null;
         try {
@@ -90,7 +105,6 @@ public class FileManager extends CanLoop {
                 framesOfAudioToCopy = inputStream.getFrameLength() - (startTime * frameRate);
             }
             newStream = new AudioInputStream(inputStream, format, framesOfAudioToCopy);
-            File destinationFile = new File("res/" + name + ".wav");
             AudioSystem.write(newStream, fileFormat.getType(), destinationFile);
             LoopManager.getLoopManager().addTrack(destinationFile, fadeDuration);
         } catch (UnsupportedAudioFileException | IOException e) {
@@ -99,6 +113,13 @@ public class FileManager extends CanLoop {
             if (inputStream != null) try { inputStream.close(); } catch (Exception ignore) {}
             if (newStream != null) try { newStream.close(); } catch (Exception ignore) {}
         }
+    }
+
+    public int getCurrentTime() {
+        if (players[0] == null) {
+            return 0;
+        }
+        return players[0].getPositionMillis();
     }
 
     public void setLooping(boolean looping) {

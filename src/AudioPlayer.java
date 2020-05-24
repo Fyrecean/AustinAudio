@@ -56,7 +56,8 @@ public class AudioPlayer extends Thread {
 
     public void run() {
         while (!started) {
-            Thread.yield();
+            if (isInterrupted())
+                return;
         }
         setGain(0);
         play();
@@ -143,6 +144,12 @@ public class AudioPlayer extends Thread {
 
     public void setPositionMillis(int position) {
         line.setMicrosecondPosition(position * timeConversion);
+    }
+
+    public int getPositionMillis() {
+        if (line == null)
+            return 0;
+        return (int) line.getMicrosecondPosition() / timeConversion;
     }
 
     private void setGain(double value) {
