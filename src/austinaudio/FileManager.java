@@ -84,10 +84,6 @@ public class FileManager extends CanLoop {
         }
     }
 
-    public void saveLoop(String filePath) {
-        saveLoop(new File(filePath));
-    }
-
     public void saveLoop(File destinationFile) {
         AudioInputStream inputStream = null;
         AudioInputStream newStream = null;

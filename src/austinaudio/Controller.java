@@ -52,6 +52,12 @@ public class Controller {
 
     @FXML
     public void loopPauseButtonListener(ActionEvent event) {
+        loopManager.pauseFade();
+        switchLoopPlayButton(playMode.PLAY);
+    }
+
+    @FXML
+    public void stopButtonListener() {
         if (loopManager.pause()) {
             switchLoopPlayButton(playMode.PLAY);
         }

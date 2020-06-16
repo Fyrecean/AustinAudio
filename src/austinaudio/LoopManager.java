@@ -37,6 +37,7 @@ public class LoopManager  {
             playingIndex = selected;
         }
         pause();
+        System.out.println(playingIndex);
         return tracks.get(playingIndex).play();
     }
 
@@ -49,6 +50,15 @@ public class LoopManager  {
             rv |= t.pause();
         }
         return rv;
+    }
+
+    public void pauseFade() {
+        if (tracks.isEmpty()) {
+            return;
+        }
+        for (Track t : tracks) {
+            t.stopFade();
+        }
     }
 
     public void nextTrack() {
@@ -64,8 +74,8 @@ public class LoopManager  {
         } else {
             currentlyPlaying.stopFade();
             playingIndex++;
+            tracks.get(playingIndex).play();
         }
-        tracks.get(playingIndex).play();
     }
 
     public void removeTrack(int selected) {
@@ -82,14 +92,5 @@ public class LoopManager  {
         Track hold = tracks.get(selected);
         tracks.set(selected, tracks.get(selected + direction));
         tracks.set(selected + direction, hold);
-    }
-
-    public String[] getFileNames() {
-        String[] trackNames = new String[tracks.size()];
-        int i = 0;
-        for(Track t : tracks) {
-            trackNames[i++] = t.toString();
-        }
-        return trackNames;
     }
 }

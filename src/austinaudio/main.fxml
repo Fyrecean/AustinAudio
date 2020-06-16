@@ -36,5 +36,6 @@
       <Label layoutX="14.0" layoutY="66.0" text="Start" />
       <CheckBox fx:id="loopCheckBox" layoutX="371.0" layoutY="74.0" mnemonicParsing="false" onAction="#setLoopCheckBoxListener" prefHeight="17.0" prefWidth="52.0" text="Loop" />
       <Button layoutX="284.0" layoutY="160.0" mnemonicParsing="false" onAction="#nextButtonListener" prefHeight="25.0" prefWidth="62.0" text="Next" />
+      <Button layoutX="284.0" layoutY="195.0" mnemonicParsing="false" onAction="#stopButtonListener" prefHeight="25.0" prefWidth="62.0" text="Stop" />
    </children>
 </AnchorPane>
