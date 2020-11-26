@@ -1,8 +1,4 @@
 # AustinAudio
-Create and playback audio loops
+Create and playback audio loops from WAV files. Intented for creating soundtracks for tabletop games. Built using JavaFX and the Java Sound Libray. 
 
-#### Supported File Formats:
-- WAV
-
-Commissioned by Austin\
-Written by Carter Schmidt
+Author: Carter Schmidt
